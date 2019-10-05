@@ -12,12 +12,15 @@ impl thermal_printer::prelude::_thermal_printer_serial_Write<u8> for File
 {
     type Error = std::io::Error;
 
-    fn write(&mut self, word: u8) -> Result<(), Self::Error> {
-        self.write(word);
+    fn write(&mut self, word: u8) -> nb::Result<(), Self::Error> {
+        use std::io::Write;
+        self.0.write(&[word])
+            .map_err(|e| nb::Error::Other(e))
+            .and_then(|e| Ok(()))
     }
 
-    fn flush(&mut self) -> Result<(), Self::Error> {
-        Ok()
+    fn flush(&mut self) -> nb::Result<(), Self::Error> {
+        Ok(())
     }
 }
 
